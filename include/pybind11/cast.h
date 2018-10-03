@@ -1587,11 +1587,12 @@ template <typename T> struct move_always<T, enable_if_t<all_of<
     std::is_same<decltype(std::declval<make_caster<T>>().operator T&()), T&>
 >::value>> : std::true_type {};
 template <typename T, typename SFINAE = void> struct move_if_unreferenced : std::false_type {};
+template <typename T> using make_caster_helper_alias = decltype(std::declval<make_caster<T>>().operator T&());
 template <typename T> struct move_if_unreferenced<T, enable_if_t<all_of<
     move_is_plain_type<T>,
     negation<move_always<T>>,
     std::is_move_constructible<T>,
-    std::is_same<decltype(std::declval<make_caster<T>>().operator T&()), T&>
+    std::is_same<make_caster_helper_alias<T>, T&>
 >::value>> : std::true_type {};
 template <typename T> using move_never = none_of<move_always<T>, move_if_unreferenced<T>>;
 
